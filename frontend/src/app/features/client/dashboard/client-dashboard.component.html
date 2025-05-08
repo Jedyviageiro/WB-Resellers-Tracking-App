@@ -1,0 +1,128 @@
+<!-- Main Dashboard Layout -->
+<div class="dashboard-container">
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="company-logo">
+        <i class="fas fa-tint"></i>
+        Kwick
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" class="nav-item active">
+        <i class="fas fa-home"></i>
+        Dashboard
+      </a>
+      <a routerLink="/orders" class="nav-item">
+        <i class="fas fa-shopping-cart"></i>
+        Orders
+      </a>
+      <a routerLink="/find-resellers" class="nav-item">
+        <i class="fas fa-map-marker-alt"></i>
+        Find Resellers
+      </a>
+      <a routerLink="/profile" class="nav-item">
+        <i class="fas fa-user"></i>
+        Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a (click)="logout()" class="nav-item logout">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <h1>Welcome, {{ userName }}!</h1>
+        <p class="date">{{ today | date:'MMMM d, y' }}</p>
+      </div>
+      <div class="header-right">
+        <div class="user-menu">
+          <i class="fas fa-user-circle"></i>
+          <span class="user-name">{{ userName }}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+      <!-- Quick Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Active Orders</h3>
+            <div class="stat-number">{{ activeOrders }}</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Completed Orders</h3>
+            <div class="stat-number">{{ completedOrders }}</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Resellers in Your City</h3>
+            <div class="stat-number">{{ resellersInCity }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="content-section">
+        <div class="section-header">
+          <h2>Recent Orders</h2>
+        </div>
+        <div class="orders-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Pickup Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of recentOrders">
+                <td>{{ order.id }}</td>
+                <td>{{ order.pickupDate | date:'short' }}</td>
+                <td>
+                  <span class="status" [ngClass]="
+                    order.status === 'PENDING' ? 'pending' : 
+                    order.status === 'APPROVED' ? 'approved' : 
+                    order.status === 'DENIED' ? 'denied' : ''
+                  ">
+                    {{ order.status }}
+                  </span>
+                </td>
+                
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

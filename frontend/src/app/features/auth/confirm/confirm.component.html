@@ -1,0 +1,16 @@
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-content">
+      <div class="company-name">Kwick</div>
+      <button class="reseller-btn">I am a reseller</button>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <div class="login-container">
+    <div class="login-box">
+      <h2>Email Confirmation</h2>
+      <p *ngIf="message" class="success">{{ message }}</p>
+      <p *ngIf="error" class="error">{{ error }}</p>
+    </div>
+  </div>

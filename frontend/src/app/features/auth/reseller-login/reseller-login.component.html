@@ -1,0 +1,57 @@
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="nav-content">
+      <div class="company-logo">
+          <i class="fas fa-tint"></i>
+          Kwick
+      </div>
+      <button class="reseller-btn" (click)="goToClientLogin($event)">
+          <i class="fas fa-user"></i>
+          I am a client
+      </button>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="login-container">
+  <div class="login-box">
+      <h2>Reseller Login</h2>
+      <form class="login-form" (ngSubmit)="login()">
+          <div class="form-group">
+              <div class="input-container">
+                  <i class="fas fa-envelope input-icon"></i>
+                  <input 
+                      type="email" 
+                      [(ngModel)]="email" 
+                      name="email" 
+                      placeholder="Email" 
+                      required
+                  >
+              </div>
+          </div>
+          <div class="form-group">
+              <div class="input-container">
+                  <i class="fas fa-lock input-icon"></i>
+                  <input 
+                      type="password" 
+                      [(ngModel)]="password" 
+                      name="password" 
+                      placeholder="Password" 
+                      required
+                  >
+              </div>
+          </div>
+          <button type="submit" class="login-btn">
+              <i class="fas fa-sign-in-alt"></i>
+              Login
+          </button>
+      </form>
+      <div class="register-link">
+          First time? <a href="#" (click)="goToResellerRegister($event)">Register here</a>
+      </div>
+      <!-- Error Message -->
+      <div *ngIf="error" class="error-message">
+          {{ error }}
+      </div>
+  </div>
+</div>

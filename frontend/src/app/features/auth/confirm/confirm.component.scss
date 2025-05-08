@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  background: transparent;
+}
+
+body {
+  background-color: #ffffff;
+}
+
+.navbar {
+  background-color: #ffffff;
+  padding: 0.8rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: 65px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+
+  .nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+  }
+
+  .reseller-btn {
+    background-color: #e3f2fd;
+    border: none;
+    color: #1976d2;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 25px;
+
+    &:hover {
+      background-color: #bbdefb;
+    }
+  }
+
+  .company-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1976d2;
+    letter-spacing: 0.5px;
+  }
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: #f5f9ff;
+  margin-top: 65px;
+}
+
+.login-box {
+  background-color: #bbdefb;
+  padding: 2.8rem;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 420px;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1976d2;
+    font-weight: 600;
+    font-size: 1.8rem;
+  }
+}
+
+.success {
+  color: green;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 1rem;
+}

@@ -1,0 +1,57 @@
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-content">
+        <div class="company-logo">
+            <i class="fas fa-tint"></i>
+            Kwick
+        </div>
+        <div class="nav-links">
+            <a routerLink="/client-dashboard" class="nav-link">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <a routerLink="/orders" class="nav-link">
+                <i class="fas fa-shopping-cart"></i>
+                Orders
+            </a>
+            <a routerLink="/profile" class="nav-link">
+                <i class="fas fa-user"></i>
+                Profile
+            </a>
+            <a (click)="logout()" class="nav-link logout">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Search Container -->
+<div class="search-container">
+    <div class="search-box">
+        <h1 class="search-title">Find Resellers Near You</h1>
+        <div class="search-input-container">
+            <i class="fas fa-search search-icon"></i>
+            <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Enter your city"
+                [(ngModel)]="searchQuery"
+                (keyup.enter)="searchResellers()"
+            >
+        </div>
+        <button class="search-button" (click)="searchResellers()">
+            Search Resellers
+        </button>
+        <p class="search-hint">Enter your city to find nearby resellers</p>
+        <!-- Error Message -->
+        <div *ngIf="error" class="error-message">
+            {{ error }}
+        </div>
+    </div>
+</div>
+
+<!-- Loading Spinner -->
+<div *ngIf="isLoading" class="loading-spinner">
+    <i class="fas fa-spinner fa-spin"></i>
+</div>
