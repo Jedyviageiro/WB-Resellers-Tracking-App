@@ -20,3 +20,16 @@ Built using Java(Spring Boot), Angular for the front-end, MySQL for the DB.
 - Java 17+ (or 11+, depending on Spring Boot version)
 - MySQL
 - Maven
+
+### Backend Setup (Spring Boot)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/water-bottle-tracker.git
+   cd water-bottle-tracker
+
+   spring.datasource.url=jdbc:mysql://localhost:3306/water_bottle_db
+spring.datasource.username=your_mysql_username
+spring.datasource.password=your_mysql_password
+spring.jpa.hibernate.ddl-auto=update
+
+
