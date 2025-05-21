@@ -1,0 +1,283 @@
+<div class="dashboard-container">
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="company-logo"><i class="fas fa-tint"></i> Kwick</div>
+    </div>
+    <div class="sidebar-content">
+      <div class="admin-info">
+        <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
+        <div class="admin-details">
+          <h3 class="admin-name">{{ userName || 'Carregando...' }}</h3>
+          <p class="admin-type">Administrador</p>
+        </div>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item active">
+          <a routerLink="/admin-dashboard" class="nav-link">
+            <i class="fas fa-chart-line"></i> Painel
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="sidebar-footer">
+      <button (click)="logout()" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="content-header">
+      <div class="header-content">
+        <h1>Bem-vindo, {{ userName }}</h1>
+        <p class="date-display">{{ today | date:'EEEE, MMMM d, y' }}</p>
+      </div>
+    </header>
+
+    <div class="dashboard-content" *ngIf="!loading; else loadingSpinner">
+      <!-- Error and Success Messages -->
+      <div *ngIf="error" class="error-message">{{ error }}</div>
+      <div *ngIf="success" class="success-message">{{ success }}</div>
+
+      <!-- Quick Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-info">
+            <h3>Total de Usuários</h3>
+            <p class="stat-value">{{ users.length }}</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-store"></i></div>
+          <div class="stat-info">
+            <h3>Revendedores</h3>
+            <p class="stat-value">{{ resellers.length }}</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-user"></i></div>
+          <div class="stat-info">
+            <h3>Clientes</h3>
+            <p class="stat-value">{{ clients.length }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Management -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2>Gerenciamento de Usuários</h2>
+        </div>
+
+        <!-- Users Section -->
+        <div class="users-section">
+          <div class="section-header">
+            <h2>Usuários</h2>
+            <div class="filters">
+              <select [(ngModel)]="roleFilter" (change)="loadUsers()">
+                <option value="">Todos os Usuários</option>
+                <option value="RESELLER">Revendedores</option>
+                <option value="CLIENT">Clientes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="users-grid">
+            <div *ngFor="let user of users" class="user-card">
+              <div class="user-header">
+                <i class="fas" [ngClass]="{
+                  'fa-store': user.role === 'RESELLER',
+                  'fa-user': user.role === 'CLIENT'
+                }"></i>
+                <h3>{{ user.name }} {{ user.surname }}</h3>
+              </div>
+              <div class="user-info">
+                <p><i class="fas fa-envelope"></i> {{ user.email }}</p>
+                <p><i class="fas fa-phone"></i> {{ user.phoneNumber }}</p>
+                <p><i class="fas fa-map-marker-alt"></i> {{ user.city }}</p>
+                <p><i class="fas fa-tag"></i> {{ user.role === 'RESELLER' ? 'Revendedor' : 'Cliente' }}</p>
+                <p><i class="fas fa-circle" [ngClass]="{'text-success': user.enabled, 'text-danger': !user.enabled}"></i> 
+                  {{ user.enabled ? 'Ativo' : 'Inativo' }}</p>
+              </div>
+              <div class="user-actions">
+                <button (click)="showUserDetails(user)" class="btn-view">
+                  <i class="fas fa-eye"></i> Detalhes
+                </button>
+                <button (click)="editUser(user)" class="btn-edit">
+                  <i class="fas fa-edit"></i> Editar
+                </button>
+                <button *ngIf="user.role === 'RESELLER'" (click)="showStockDetails(user)" class="btn-stock">
+                  <i class="fas fa-box"></i> Estoque
+                </button>
+                <button (click)="removeUser(user)" class="btn-delete">
+                  <i class="fas fa-trash"></i> Remover
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #loadingSpinner>
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin"></i> Carregando painel...
+      </div>
+    </ng-template>
+
+    <!-- User Details Modal -->
+    <div class="modal" *ngIf="showUserModal && selectedUser">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>{{ editingUser ? 'Editar Usuário' : 'Detalhes do Usuário' }}</h2>
+          <button class="close-button" (click)="closeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="editingUser" class="edit-form">
+            <div class="form-group">
+              <label>Nome</label>
+              <input type="text" [(ngModel)]="editingUser.name" required>
+            </div>
+            <div class="form-group">
+              <label>Sobrenome</label>
+              <input type="text" [(ngModel)]="editingUser.surname" required>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" [(ngModel)]="editingUser.email" required>
+            </div>
+            <div class="form-group">
+              <label>Telefone</label>
+              <input type="tel" [(ngModel)]="editingUser.phoneNumber" required>
+            </div>
+            <div class="form-group">
+              <label>Cidade</label>
+              <input type="text" [(ngModel)]="editingUser.city" required>
+            </div>
+            <div class="form-group">
+              <label>Endereço</label>
+              <input type="text" [(ngModel)]="editingUser.address" required>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select [(ngModel)]="editingUser.enabled">
+                <option [ngValue]="true">Ativo</option>
+                <option [ngValue]="false">Inativo</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button (click)="saveUser()" class="btn-save">
+                <i class="fas fa-save"></i> Salvar
+              </button>
+              <button (click)="closeModal()" class="btn-cancel">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+            </div>
+          </div>
+          <div *ngIf="!editingUser" class="user-details-grid">
+            <div class="detail-item">
+              <label>Nome:</label>
+              <p>{{ selectedUser.name }} {{ selectedUser.surname }}</p>
+            </div>
+            <div class="detail-item">
+              <label>Email:</label>
+              <p>{{ selectedUser.email }}</p>
+            </div>
+            <div class="detail-item">
+              <label>Telefone:</label>
+              <p>{{ selectedUser.phoneNumber || 'Não definido' }}</p>
+            </div>
+            <div class="detail-item">
+              <label>Cidade:</label>
+              <p>{{ selectedUser.city }}</p>
+            </div>
+            <div class="detail-item">
+              <label>Endereço:</label>
+              <p>{{ selectedUser.address || 'Não definido' }}</p>
+            </div>
+            <div class="detail-item">
+              <label>Função:</label>
+              <p>{{ selectedUser.role === 'RESELLER' ? 'Revendedor' : 'Cliente' }}</p>
+            </div>
+            <div class="detail-item">
+              <label>Status:</label>
+              <p>{{ selectedUser.enabled ? 'Ativo' : 'Inativo' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Modal -->
+    <div class="modal" *ngIf="showStockModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Estoque - {{ selectedReseller?.name }}</h2>
+          <button (click)="closeModal()" class="close-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="stock-form">
+            <div *ngIf="editingStock" class="form-group">
+              <label>Quantidade Atual</label>
+              <input type="number" [(ngModel)]="editingStock.quantity" min="0" required>
+            </div>
+            <div *ngIf="editingStock" class="form-group">
+              <label>Preço Atual</label>
+              <input type="number" [(ngModel)]="editingStock.price" min="0" step="0.01" required>
+            </div>
+            <div class="form-actions">
+              <button *ngIf="editingStock" (click)="saveStock()" class="btn-save">
+                <i class="fas fa-save"></i> Salvar Mudanças
+              </button>
+              <button (click)="showAddStockModal = true" class="btn-add">
+                <i class="fas fa-plus"></i> Adicionar Estoque
+              </button>
+              <button (click)="closeModal()" class="btn-cancel">
+                <i class="fas fa-times"></i> Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Stock Modal -->
+    <div class="modal" *ngIf="showAddStockModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Adicionar Estoque - {{ selectedReseller?.name }}</h2>
+          <button (click)="closeModal()" class="close-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="stock-form">
+            <div class="form-group">
+              <label>Quantidade</label>
+              <input type="number" [(ngModel)]="stockQuantity" min="0" required>
+            </div>
+            <div class="form-group">
+              <label>Preço</label>
+              <input type="number" [(ngModel)]="stockPrice" min="0" step="0.01" required>
+            </div>
+            <div class="form-actions">
+              <button (click)="addStock()" class="btn-save">
+                <i class="fas fa-save"></i> Adicionar Estoque
+              </button>
+              <button (click)="closeModal()" class="btn-cancel">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div> 

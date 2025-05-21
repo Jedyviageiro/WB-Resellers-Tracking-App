@@ -1,0 +1,133 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="company-logo">WaterBottleSystem</div>
+    </div>
+    <div class="sidebar-content">
+      <div class="reseller-info">
+        <div class="reseller-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="reseller-details">
+          <div class="reseller-name">{{ userName }}</div>
+          <div class="reseller-type">Revendedor</div>
+        </div>
+      </div>
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a routerLink="/reseller-dashboard" class="nav-link">
+              <i class="fas fa-home"></i>
+              Painel
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/view-orders" class="nav-link">
+              <i class="fas fa-shopping-cart"></i>
+              Visualizar Pedidos
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a routerLink="/view-stock" class="nav-link">
+              <i class="fas fa-box"></i>
+              Visualizar Estoque
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/reseller-profile" class="nav-link">
+              <i class="fas fa-user"></i>
+              Perfil
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-header">
+      <div class="header-content">
+        <h1>Visualizar Estoque</h1>
+        <div class="date-display">{{ today | date:'EEEE, MMMM d, y' }}</div>
+      </div>
+    </div>
+
+    <div class="stock-container">
+      <div *ngIf="error" class="error-message">{{ error }}</div>
+      <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+      <div *ngIf="stock && stock.id !== 0" class="stock-card" (click)="showEditModal(stock)">
+        <div class="stock-header">
+          <div class="item-name">Garrafa de Água</div>
+          <button class="edit-button" (click)="showEditModal(stock)">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+        <div class="stock-quantity">{{ stock.quantity }}</div>
+        <div class="stock-price">Preço: MZN {{ stock.price }}</div>
+        <div class="stock-date">Última Atualização: {{ formatDate(stock.date) }}</div>
+        <div class="level-label">{{ getStockLevelLabel(stock.quantity) }}</div>
+      </div>
+      <div *ngIf="!stock || stock.id === 0" class="no-stock-message">
+        Sem estoque disponível. Entre em contato com o suporte para inicializar seu estoque.
+      </div>
+    </div>
+
+    <!-- Edit Stock Modal -->
+    <div class="modal" id="editStockModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Editar Estoque</h2>
+          <button class="close-button" (click)="closeModals()">×</button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="updateStock()">
+            <div class="form-group">
+              <label for="itemName">Nome do Item:</label>
+              <input type="text" id="itemName" value="Garrafa de Água" disabled>
+            </div>
+            <div class="form-group">
+              <label for="itemQuantity">Quantidade Atual:</label>
+              <input type="number" id="itemQuantity" [value]="currentItem?.quantity" disabled>
+            </div>
+            <div class="form-group">
+              <label for="adjustmentQuantity">Quantidade de Ajuste:</label>
+              <input type="number" id="adjustmentQuantity" [(ngModel)]="adjustmentQuantity" name="adjustmentQuantity" required>
+              <small class="adjustment-hint">Digite um número positivo para adicionar estoque, negativo para remover</small>
+            </div>
+            <div class="form-group">
+              <label for="adjustmentPrice">Preço (MZN):</label>
+              <input type="text" id="adjustmentPrice" [(ngModel)]="adjustmentPrice" name="adjustmentPrice" required pattern="^\d+(\.\d{1,2})?$">
+              <small class="adjustment-hint">Digite o preço (ex: 12,34)</small>
+            </div>
+            <div class="form-group">
+              <label for="adjustmentReason">Motivo do Ajuste:</label>
+              <textarea id="adjustmentReason" [(ngModel)]="adjustmentReason" name="adjustmentReason" required></textarea>
+            </div>
+            <div class="warning-message">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>Por favor, seja sincero com seus ajustes de estoque. Relatórios falsos podem resultar em suspensão da conta.</span>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="submit-button">
+                <i class="fas fa-check"></i>
+                Salvar Alterações
+              </button>
+              <button type="button" class="cancel-button" (click)="closeModals()">
+                <i class="fas fa-times"></i>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

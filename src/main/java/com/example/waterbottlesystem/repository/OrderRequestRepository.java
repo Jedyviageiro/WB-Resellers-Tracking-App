@@ -21,4 +21,7 @@ public interface OrderRequestRepository extends JpaRepository<OrderRequest, Long
     @Query("SELECT o.reseller.id AS resellerId, MAX(o.createdAt) AS latestOrderRequestDate, COUNT(o) AS orderRequestCount " +
            "FROM OrderRequest o WHERE o.reseller IN :resellers GROUP BY o.reseller.id")
     List<Map<String, Object>> findOrderRequestStatsByResellers(@Param("resellers") List<User> resellers);
+
+    @Query("SELECT COUNT(o) FROM OrderRequest o WHERE o.client.id = :clientId")
+long countByClientId(@Param("clientId") User clientId);
 }

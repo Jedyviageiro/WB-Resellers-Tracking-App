@@ -1,0 +1,29 @@
+<div class="invoices-container">
+  <h2>Invoices</h2>
+  
+  <div class="invoices-list" *ngIf="!loading; else loadingSpinner">
+    <div class="invoice-card" *ngFor="let invoice of invoices">
+      <div class="invoice-header">
+        <h3>Invoice #{{ invoice.invoiceNumber }}</h3>
+        <span class="status-badge" [class]="invoice.status.toLowerCase()">
+          {{ invoice.status }}
+        </span>
+      </div>
+      <div class="invoice-details">
+        <p><strong>Customer:</strong> {{ invoice.customerName }}</p>
+        <p><strong>Amount:</strong> ${{ invoice.amount }}</p>
+        <p><strong>Date:</strong> {{ invoice.createdAt | date }}</p>
+      </div>
+      <div class="invoice-actions">
+        <button (click)="viewInvoice(invoice.id)" class="btn-view">View Details</button>
+        <button (click)="updateStatus(invoice.id)" class="btn-update">Update Status</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingSpinner>
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i> Loading invoices...
+    </div>
+  </ng-template>
+</div> 

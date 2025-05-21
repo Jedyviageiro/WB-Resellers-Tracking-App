@@ -1,0 +1,188 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="company-logo">WaterBottleSystem</div>
+    </div>
+    <div class="sidebar-content">
+      <div class="reseller-info">
+        <div class="reseller-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="reseller-details">
+          <div class="reseller-name">{{ userName }}</div>
+          <div class="reseller-type">Revendedor</div>
+        </div>
+      </div>
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a routerLink="/reseller-dashboard" class="nav-link">
+              <i class="fas fa-home"></i>
+              Painel
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a routerLink="/view-orders" class="nav-link">
+              <i class="fas fa-shopping-cart"></i>
+              Visualizar Pedidos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/view-stock" class="nav-link">
+              <i class="fas fa-box"></i>
+              Visualizar Estoque
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/reseller-profile" class="nav-link">
+              <i class="fas fa-user"></i>
+              Perfil
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-header">
+      <div class="header-content">
+        <h1>Visualizar Pedidos</h1>
+        <div class="date-display">{{ today | date:'EEEE, MMMM d, y' }}</div>
+      </div>
+      <div class="header-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Buscar pedidos..." [(ngModel)]="searchTerm" (input)="renderOrders()">
+        </div>
+        <select class="status-filter" [(ngModel)]="statusFilter" (change)="renderOrders()">
+          <option value="all">Todos os Pedidos</option>
+          <option value="pending">Pendentes</option>
+          <option value="approved">Aprovados</option>
+          <option value="denied">Negados</option>
+          <option value="cancelled">Cancelados</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="orders-container">
+      <div *ngIf="error" class="error-message">{{ error }}</div>
+      <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+      <div *ngFor="let order of orders" class="order-card" (click)="showOrderModal(order)">
+        <div class="order-header">
+          <div class="order-id">Pedido #{{ order.id }}</div>
+          <div class="order-status {{ order.status.toLowerCase() }}">{{ order.status }}</div>
+        </div>
+        <div class="order-details">
+          <div class="detail-item">
+            <div class="label">Cliente</div>
+            <div class="value">{{ order.clientName }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="label">Data</div>
+            <div class="value">{{ formatDate(order.createdAt) }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="label">Quantidade</div>
+            <div class="value">{{ order.quantity }} unidades</div>
+          </div>
+        </div>
+        <div class="order-items">
+          <div class="item-tag">Garrafa de Água ({{ order.quantity }})</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Modal -->
+    <div class="modal" id="orderModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Detalhes do Pedido</h2>
+          <button class="close-button" (click)="closeModals()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="order-info">
+            <div class="info-group">
+              <label>ID do Pedido:</label>
+              <span id="modalOrderId"></span>
+            </div>
+            <div class="info-group">
+              <label>Cliente:</label>
+              <span id="modalCustomer"></span>
+            </div>
+            <div class="info-group">
+              <label>Data:</label>
+              <span id="modalDate"></span>
+            </div>
+            <div class="info-group">
+              <label>Quantidade:</label>
+              <span id="modalTotal"></span>
+            </div>
+            <div class="info-group">
+              <label>Status:</label>
+              <span id="modalStatus"></span>
+            </div>
+          </div>
+          <div class="order-items">
+            <h3>Itens do Pedido</h3>
+            <div id="modalItems"></div>
+          </div>
+          <div class="stock-warning" id="stockWarning" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Estoque baixo após aprovação!</span>
+          </div>
+          <div class="action-buttons">
+            <button class="approve-button" id="approveButton" (click)="showApprovalModal()">
+              <i class="fas fa-check"></i>
+              Aprovar Pedido
+            </button>
+            <button class="deny-button" id="denyButton" (click)="denyOrder()">
+              <i class="fas fa-times"></i>
+              Negar Pedido
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval Modal -->
+    <div class="modal" id="approvalModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Aprovar Pedido</h2>
+          <button class="close-button" (click)="closeModals()">×</button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="approveOrder()">
+            <div class="form-group">
+              <label for="pickupDate">Data de Retirada:</label>
+              <input type="date" id="pickupDate" [(ngModel)]="pickupDate" name="pickupDate" required>
+            </div>
+            <div class="form-group">
+              <label for="pickupCode">Código de Retirada:</label>
+              <input type="text" id="pickupCode" [(ngModel)]="pickupCode" name="pickupCode" required>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="submit-button">
+                <i class="fas fa-check"></i>
+                Confirmar Aprovação
+              </button>
+              <button type="button" class="cancel-button" (click)="closeModals()">
+                <i class="fas fa-times"></i>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

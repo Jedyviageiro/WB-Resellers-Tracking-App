@@ -36,6 +36,15 @@ public class OrderRequest {
 
     private int quantity; // New field for order quantity
 
+    //newwwww 
+    
+    private String resellerName;
+    private String clientName;
+    
+    //private Long resellerId;
+
+    //private String deliveryAddress;*/
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -67,6 +76,8 @@ public class OrderRequest {
     public void setReseller(User reseller) {
         this.reseller = reseller;
     }
+
+
 
     public OrderStatus getStatus() {
         return status;
@@ -107,4 +118,41 @@ public class OrderRequest {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+
+    //Resellers infooo
+
+    public String getResellerName() {
+        return resellerName;
+    }
+
+    public void setResellerName(String resellerName) {
+        this.resellerName = resellerName;
+    }
+
+    public String getClientName(){
+        return clientName;
+    }
+
+    public void setClientName(String clientName){
+        this.clientName = clientName;
+    }
+
+    /* 
+    public Long getResellerId() {
+        return resellerId;
+    }
+
+    public void setResellerId(Long resellerId) {
+        this.resellerId = resellerId;
+    }*/
+
+    /*public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }*/
+    
 }

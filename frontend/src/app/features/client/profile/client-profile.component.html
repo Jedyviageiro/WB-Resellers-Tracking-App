@@ -1,0 +1,138 @@
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="nav-content">
+    <div class="company-logo">
+      <i class="fas fa-tint"></i>
+      Kwick
+    </div>
+    <div class="nav-links">
+      <a routerLink="/dashboard" class="nav-link">
+        <i class="fas fa-home"></i>
+        Painel
+      </a>
+      <a routerLink="/orders" class="nav-link">
+        <i class="fas fa-shopping-cart"></i>
+        Pedidos
+      </a>
+      <a routerLink="/find-resellers" class="nav-link">
+        <i class="fas fa-map-marker-alt"></i>
+        Encontrar Revendedores
+      </a>
+      <a routerLink="/client-profile" class="nav-link active">
+        <i class="fas fa-user"></i>
+        Perfil
+      </a>
+      <a (click)="logout()" class="nav-link logout">
+        <i class="fas fa-sign-out-alt"></i>
+        Sair
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="profile-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-spinner">
+    <i class="fas fa-spinner fa-spin"></i>
+    Carregando perfil...
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error && !loading" class="error-message">
+    <i class="fas fa-exclamation-circle"></i>
+    {{ error }}
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage && !loading" class="success-message">
+    <i class="fas fa-check-circle"></i>
+    {{ successMessage }}
+  </div>
+
+  <!-- Profile Header -->
+  <div class="profile-header" *ngIf="profile && !loading">
+    <div class="profile-avatar">
+      <i class="fas fa-user"></i>
+    </div>
+    <div class="profile-info">
+      <h1 class="profile-name">{{ profile.name }} {{ profile.surname || '' }}</h1>
+      <p class="profile-email">{{ profile.email }}</p>
+    </div>
+    <button class="edit-button" (click)="startEditing()" *ngIf="!isEditing">
+      <i class="fas fa-edit"></i>
+      Editar Perfil
+    </button>
+  </div>
+
+  <!-- Profile Sections -->
+  <div class="profile-sections" *ngIf="profile && !loading">
+    <!-- Personal Information -->
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-user-circle"></i>
+        Informações Pessoais
+      </h2>
+      <div class="info-item" *ngIf="!isEditing">
+        <div class="info-label">Nome Completo</div>
+        <div class="info-value">{{ profile.name }} {{ profile.surname || '' }}</div>
+      </div>
+      <div class="info-item" *ngIf="!isEditing">
+        <div class="info-label">Email</div>
+        <div class="info-value">{{ profile.email }}</div>
+      </div>
+      <div class="info-item" *ngIf="!isEditing">
+        <div class="info-label">Telefone</div>
+        <div class="info-value">{{ profile.phoneNumber }}</div>
+      </div>
+      <div class="info-item" *ngIf="isEditing">
+        <div class="info-label">Nome</div>
+        <input type="text" [(ngModel)]="editedProfile!.name" class="info-input" required>
+      </div>
+      <div class="info-item" *ngIf="isEditing">
+        <div class="info-label">Sobrenome</div>
+        <input type="text" [(ngModel)]="editedProfile!.surname" class="info-input">
+      </div>
+      <div class="info-item" *ngIf="isEditing">
+        <div class="info-label">Telefone</div>
+        <input type="text" [(ngModel)]="editedProfile!.phoneNumber" class="info-input" required>
+      </div>
+    </div>
+
+    <!-- Address Information -->
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-map-marker-alt"></i>
+        Informações de Endereço
+      </h2>
+      <div class="info-item" *ngIf="!isEditing">
+        <div class="info-label">Endereço</div>
+        <div class="info-value">{{ profile.address || 'Não fornecido' }}</div>
+      </div>
+      <div class="info-item" *ngIf="!isEditing">
+        <div class="info-label">Cidade</div>
+        <div class="info-value">{{ profile.city }}</div>
+      </div>
+      <div class="info-item" *ngIf="isEditing">
+        <div class="info-label">Endereço</div>
+        <input type="text" [(ngModel)]="editedProfile!.address" class="info-input">
+      </div>
+      <div class="info-item" *ngIf="isEditing">
+        <div class="info-label">Cidade</div>
+        <input type="text" [(ngModel)]="editedProfile!.city" class="info-input" required>
+      </div>
+    </div>
+
+    <!-- Edit Actions -->
+    <div class="profile-section edit-actions" *ngIf="isEditing">
+      <button class="save-button" (click)="saveProfile()">
+        <i class="fas fa-save"></i>
+        Salvar
+      </button>
+      <button class="cancel-button" (click)="cancelEditing()">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

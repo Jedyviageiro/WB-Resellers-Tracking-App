@@ -7,7 +7,7 @@
       </div>
       <button class="reseller-btn" (click)="goToResellerLogin($event)">
           <i class="fas fa-store"></i>
-          I am a reseller
+          Sou um revendedor
       </button>
   </div>
 </nav>
@@ -15,7 +15,7 @@
 <!-- Main Content -->
 <div class="login-container">
   <div class="login-box">
-      <h2>Client Registration</h2>
+      <h2>Cadastro de Cliente</h2>
       <form class="login-form" (ngSubmit)="register()">
           <div class="form-group">
               <div class="input-container">
@@ -24,7 +24,7 @@
                       type="text" 
                       [(ngModel)]="name" 
                       name="name" 
-                      placeholder="Name" 
+                      placeholder="Nome" 
                       required
                   >
               </div>
@@ -36,7 +36,7 @@
                       type="text" 
                       [(ngModel)]="surname" 
                       name="surname" 
-                      placeholder="Surname" 
+                      placeholder="Sobrenome" 
                       required
                   >
               </div>
@@ -60,7 +60,7 @@
                       type="password" 
                       [(ngModel)]="password" 
                       name="password" 
-                      placeholder="Password" 
+                      placeholder="Senha" 
                       required
                   >
               </div>
@@ -72,7 +72,7 @@
                       type="password" 
                       [(ngModel)]="repeatPassword" 
                       name="repeatPassword" 
-                      placeholder="Repeat Password" 
+                      placeholder="Repetir Senha" 
                       required
                   >
               </div>
@@ -84,7 +84,7 @@
                       type="text" 
                       [(ngModel)]="city" 
                       name="city" 
-                      placeholder="City" 
+                      placeholder="Cidade" 
                       required
                   >
               </div>
@@ -96,18 +96,18 @@
                       type="tel" 
                       [(ngModel)]="phoneNumber" 
                       name="phoneNumber" 
-                      placeholder="Phone Number" 
+                      placeholder="Telefone" 
                       required
                   >
               </div>
           </div>
           <button type="submit" class="login-btn">
               <i class="fas fa-user-plus"></i>
-              Register
+              Cadastrar
           </button>
       </form>
       <div class="register-link">
-          Already have an account? <a href="#" (click)="goToLogin()">Login</a>
+          Já tem uma conta? <a href="#" (click)="goToLogin()">Entrar</a>
       </div>
       <!-- Error Message -->
       <div *ngIf="error" class="error-message">

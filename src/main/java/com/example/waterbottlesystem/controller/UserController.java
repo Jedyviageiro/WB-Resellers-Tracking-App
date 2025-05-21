@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.waterbottlesystem.model.Role;
 import com.example.waterbottlesystem.model.User;
+import com.example.waterbottlesystem.service.OrderService;
 import com.example.waterbottlesystem.service.UserService;
 
 @RestController
@@ -30,6 +31,9 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
+    @Autowired
+    private OrderService orderService;
+    
     @Autowired
     public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
@@ -79,9 +83,10 @@ public class UserController {
             Map<String, Object> response = new HashMap<>();
             response.put("id", currentUser.getId());
             response.put("name", currentUser.getName());
+            response.put("surname", currentUser.getSurname());
             response.put("email", currentUser.getEmail());
-            response.put("address", currentUser.getAddress());
             response.put("phone", currentUser.getPhoneNumber());
+            response.put("address", currentUser.getAddress());
             response.put("city", currentUser.getCity());
             
             return ResponseEntity.ok(response);
@@ -110,8 +115,25 @@ public class UserController {
             if (updates.containsKey("name")) {
                 currentUser.setName(updates.get("name"));
             }
+            if (updates.containsKey("surname")) {
+                currentUser.setSurname(updates.get("surname"));
+            }
+            if (updates.containsKey("email")) {
+                String newEmail = updates.get("email");
+                if (newEmail == null || !newEmail.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+")) {
+                    return ResponseEntity.badRequest().body("Invalid email format");
+                }
+                if (!newEmail.equals(currentUser.getEmail()) && userService.findByEmail(newEmail).isPresent()) {
+                    return ResponseEntity.badRequest().body("Email already in use");
+                }
+                currentUser.setEmail(newEmail);
+            }
             if (updates.containsKey("phone")) {
-                currentUser.setPhoneNumber(updates.get("phone"));
+                String phone = updates.get("phone");
+                if (phone != null && !phone.matches("\\+?\\d{10,15}")) {
+                    return ResponseEntity.badRequest().body("Invalid phone number format");
+                }
+                currentUser.setPhoneNumber(phone);
             }
             if (updates.containsKey("address")) {
                 String newAddress = updates.get("address");
@@ -125,7 +147,18 @@ public class UserController {
             }
 
             User updatedUser = userService.updateUser(currentUser);
-            return ResponseEntity.ok("Profile updated successfully");
+            
+            // Return updated profile as JSON
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", updatedUser.getId());
+            response.put("name", updatedUser.getName());
+            response.put("surname", updatedUser.getSurname());
+            response.put("email", updatedUser.getEmail());
+            response.put("phone", updatedUser.getPhoneNumber());
+            response.put("address", updatedUser.getAddress());
+            response.put("city", updatedUser.getCity());
+            
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Unauthorized: " + e.getMessage());
         }
@@ -179,17 +212,77 @@ public class UserController {
             if (updates.containsKey("name")) {
                 currentUser.setName(updates.get("name"));
             }
+            if (updates.containsKey("surname")) {
+                currentUser.setSurname(updates.get("surname"));
+            }
             if (updates.containsKey("phone")) {
                 currentUser.setPhoneNumber(updates.get("phone"));
             }
             if (updates.containsKey("city")) {
                 currentUser.setCity(updates.get("city"));
             }
+            if (updates.containsKey("address")) {
+                currentUser.setAddress(updates.get("address"));
+            }
 
             User updatedUser = userService.updateUser(currentUser);
-            return ResponseEntity.ok("Profile updated successfully");
+            return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Unauthorized: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(
+            @PathVariable Long id,
+            @RequestBody User updates) {
+        try {
+            System.out.println("Received update request for user ID: " + id);
+            System.out.println("Update data: " + updates);
+
+            Optional<User> userToUpdate = userService.findById(id);
+            if (userToUpdate.isEmpty()) {
+                System.out.println("User not found with ID: " + id);
+                return ResponseEntity.status(404).body("User to update not found");
+            }
+
+            User user = userToUpdate.get();
+            System.out.println("Found user to update: " + user.getEmail());
+            
+            // Only update fields that are not null
+            if (updates.getName() != null) {
+                user.setName(updates.getName());
+            }
+            if (updates.getSurname() != null) {
+                user.setSurname(updates.getSurname());
+            }
+            if (updates.getEmail() != null) {
+                // Check if email is already in use by another user
+                Optional<User> existingUser = userService.findByEmail(updates.getEmail());
+                if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                    return ResponseEntity.badRequest().body("Email already in use");
+                }
+                user.setEmail(updates.getEmail());
+            }
+            if (updates.getPhoneNumber() != null) {
+                user.setPhoneNumber(updates.getPhoneNumber());
+            }
+            if (updates.getAddress() != null) {
+                user.setAddress(updates.getAddress());
+            }
+            if (updates.getCity() != null) {
+                user.setCity(updates.getCity());
+            }
+            // Update enabled status
+            user.setEnabled(updates.isEnabled());
+
+            User updatedUser = userService.updateUser(user);
+            System.out.println("User updated successfully: " + updatedUser.getEmail());
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            System.out.println("Error updating user: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error updating user: " + e.getMessage());
         }
     }
 
@@ -199,5 +292,4 @@ public class UserController {
         }
         return authHeader.substring(7);
     }
-    
 }

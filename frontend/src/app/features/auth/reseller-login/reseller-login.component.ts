@@ -21,12 +21,21 @@ export class ResellerLoginComponent {
   login() {
     this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
+        if (res.role === 'ADMIN') {
+          this.authService.setToken(res.token);
+          this.error = null;
+          console.log('Admin login successful, navigating to admin dashboard');
+          this.router.navigate(['/admin-dashboard']);
+          return;
+        }
         if (res.role !== 'RESELLER') {
           this.error = 'This page is for reseller login only';
           return;
         }
+        this.authService.setToken(res.token);
         this.error = null;
         console.log('Reseller login successful, token:', res.token);
+        this.router.navigate(['/reseller-dashboard']);
       },
       error: (err) => {
         this.error = err.error || 'Login failed';

@@ -49,9 +49,19 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public List<OrderRequest> getOrdersByClient(Long clientId) {
-        return orderRepository.findByClientId(clientId);
-    }
+ public List<OrderRequest> getOrdersByClient(Long clientId) {
+    List<OrderRequest> orders = orderRepository.findByClientId(clientId);
+    orders.forEach(order -> {
+        User reseller = order.getReseller();
+        if (reseller != null) {
+            order.setResellerName(reseller.getName());
+        } else {
+            order.setResellerName("No Reseller");
+        }
+    });
+    return orders;
+}
+
 
     public List<OrderRequest> getOrdersByReseller(User reseller) {
         return orderRepository.findByReseller(reseller);
@@ -93,6 +103,13 @@ public class OrderService {
         sendPickupConfirmationEmail(order);
     }
 
+    public void cancelOrder(Long id) {
+        OrderRequest order = orderRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+    }
+
     public List<OrderRequest> getOrdersByAuthenticatedClient() {
         String email = jwtUtil.extractUsername(jwtUtil.getCurrentToken());
         User client = userService.findByEmail(email)
@@ -130,5 +147,9 @@ public class OrderService {
     private String formatDateTime(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return dateTime != null ? dateTime.format(formatter) : "N/A";
+    }
+
+    public List<OrderRequest> findByClientId(Long clientId) {
+        return orderRepository.findByClientId(clientId);
     }
 }

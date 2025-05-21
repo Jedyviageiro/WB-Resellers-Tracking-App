@@ -22,6 +22,13 @@ export class LoginComponent {
     console.debug('Initiating login for:', this.email);
     this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
+        if (res.role === 'ADMIN') {
+          this.authService.setToken(res.token);
+          this.error = null;
+          console.debug('Admin login successful, navigating to admin dashboard');
+          this.router.navigate(['/admin-dashboard']);
+          return;
+        }
         if (res.role !== 'CLIENT') {
           this.error = 'This page is for client login only';
           console.error('Invalid role:', res.role);

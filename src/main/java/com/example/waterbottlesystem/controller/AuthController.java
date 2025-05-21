@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import com.example.waterbottlesystem.model.Role;
 import com.example.waterbottlesystem.model.User;
 import com.example.waterbottlesystem.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -75,4 +77,34 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Invalid or expired token.");
         }
     }
+
+      @GetMapping("/profile")
+       public ResponseEntity<?> getUserProfile(HttpServletRequest request) {
+           try {
+               String authHeader = request.getHeader("Authorization");
+               if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header");
+               }
+               String token = authHeader.substring(7);
+               String email = jwtUtil.extractUsername(token);
+               if (!jwtUtil.validateToken(token)) {
+                   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+               }
+               Optional<User> userOpt = userService.findByEmail(email);
+               if (userOpt.isEmpty()) {
+                   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+               }
+               User user = userOpt.get();
+               Map<String, Object> response = new HashMap<>();
+               response.put("id", user.getId());
+               response.put("name", user.getName());
+               response.put("email", user.getEmail());
+               response.put("role", user.getRole().name());
+               response.put("phone", user.getPhoneNumber());
+               response.put("city", user.getCity());
+               return ResponseEntity.ok(response);
+           } catch (Exception e) {
+               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching profile: " + e.getMessage());
+           }
+       }
 }
