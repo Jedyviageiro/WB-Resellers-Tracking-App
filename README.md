@@ -41,8 +41,8 @@ Ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Jedyviageiro/water-bottle-tracker.git
-   cd water-bottle-tracker/backend
+   git clone https://github.com/Jedyviageiro/WB-Tracking-App.git
+   cd waterbottlesystem
 
 
 2. Configure application.properties
